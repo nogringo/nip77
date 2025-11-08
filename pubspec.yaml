@@ -1,7 +1,7 @@
 name: nip77
 description: Dart implementation of NIP-77 Negentropy Syncing.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://gitworkshop.dev/npub1kg4sdvz3l4fr99n2jdz2vdxe2mpacva87hkdetv76ywacsfq5leqquw5te/nip77
 
 environment:
   sdk: ^3.9.2

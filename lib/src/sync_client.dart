@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'negentropy.dart';
 import 'negentropy_record.dart';
@@ -19,7 +18,7 @@ class Nip77SyncClient {
   final Map<String, _SyncSession> _sessions = {};
 
   Nip77SyncClient({required MessageSender sendMessage})
-      : _sendMessage = sendMessage;
+    : _sendMessage = sendMessage;
 
   /// Starts a new sync session with the given records and filter
   ///
@@ -35,9 +34,7 @@ class Nip77SyncClient {
         'neg_${DateTime.now().millisecondsSinceEpoch}_${_sessions.length}';
 
     // Create Negentropy instance
-    final negentropy = Negentropy(
-      records: records,
-    );
+    final negentropy = Negentropy(records: records);
 
     // Initialize and get first message
     final initialMessage = negentropy.initiate();

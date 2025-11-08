@@ -1,4 +1,5 @@
 /// NIP-77 message types for Negentropy protocol
+library;
 
 /// Base class for all NIP-77 messages
 abstract class Nip77Message {
@@ -48,10 +49,8 @@ class NegMsgMessage extends Nip77Message {
   /// Hex-encoded Negentropy message
   final String message;
 
-  NegMsgMessage({
-    required String subscriptionId,
-    required this.message,
-  }) : super(subscriptionId);
+  NegMsgMessage({required String subscriptionId, required this.message})
+    : super(subscriptionId);
 
   /// Creates from JSON array
   factory NegMsgMessage.fromJson(List<dynamic> json) {
@@ -119,7 +118,8 @@ class NegErrMessage extends Nip77Message {
   }
 
   @override
-  String toString() => 'NEG-ERR: subscription=$subscriptionId, error=$errorCode'
+  String toString() =>
+      'NEG-ERR: subscription=$subscriptionId, error=$errorCode'
       '${details != null ? ', details=$details' : ''}';
 }
 

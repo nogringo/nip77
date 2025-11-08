@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'nostr_relay.dart';
-import 'negentropy.dart';
 import 'negentropy_record.dart';
-import 'messages.dart';
 import 'sync_client.dart';
 
 /// Complete NIP-77 client with WebSocket management
@@ -68,10 +66,9 @@ class Nip77Client {
       filter: filter,
       onResult: (result) {
         if (!completer.isCompleted) {
-          completer.complete(SyncResult(
-            needIds: result.needIds,
-            haveIds: result.haveIds,
-          ));
+          completer.complete(
+            SyncResult(needIds: result.needIds, haveIds: result.haveIds),
+          );
         }
       },
       onError: (error) {
@@ -104,10 +101,7 @@ class Nip77Client {
     required Map<String, dynamic> filter,
   }) async {
     // Step 1: Sync to get missing IDs
-    final syncResult = await syncEvents(
-      myEvents: myEvents,
-      filter: filter,
-    );
+    final syncResult = await syncEvents(myEvents: myEvents, filter: filter);
 
     if (syncResult.needIds.isEmpty) {
       return []; // No new events
@@ -174,10 +168,7 @@ class Nip77Client {
         subscription?.cancel();
         final accepted = message[2] as bool;
         final reason = message.length > 3 ? message[3] as String : '';
-        completer.complete(PublishResult(
-          accepted: accepted,
-          message: reason,
-        ));
+        completer.complete(PublishResult(accepted: accepted, message: reason));
       }
     });
 
@@ -220,10 +211,7 @@ class SyncResult {
   /// Event IDs that we have (relay doesn't have)
   final List<String> haveIds;
 
-  SyncResult({
-    required this.needIds,
-    required this.haveIds,
-  });
+  SyncResult({required this.needIds, required this.haveIds});
 
   @override
   String toString() =>
@@ -238,6 +226,5 @@ class PublishResult {
   PublishResult({required this.accepted, required this.message});
 
   @override
-  String toString() =>
-      'PublishResult(accepted: $accepted, message: $message)';
+  String toString() => 'PublishResult(accepted: $accepted, message: $message)';
 }

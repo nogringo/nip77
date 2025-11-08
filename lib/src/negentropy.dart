@@ -25,10 +25,7 @@ class ReconciliationResult {
   /// IDs the other side has that we don't
   final List<String> needIds;
 
-  ReconciliationResult({
-    required this.haveIds,
-    required this.needIds,
-  });
+  ReconciliationResult({required this.haveIds, required this.needIds});
 
   @override
   String toString() =>
@@ -128,8 +125,10 @@ class Negentropy {
           skip = false;
           // Encode previous bound + SKIP mode
           _encodeTimestamp(prevBoundTimestamp, o);
-          o.add(Varint.encode(prevBoundId.length > 32 ? 0 : prevBoundId.length));
-          if (prevBoundId.length > 0 && prevBoundId.length <= 32) {
+          o.add(
+            Varint.encode(prevBoundId.length > 32 ? 0 : prevBoundId.length),
+          );
+          if (prevBoundId.isNotEmpty && prevBoundId.length <= 32) {
             o.add(prevBoundId);
           }
           o.add(Varint.encode(NegentropyMode.skip.value));
@@ -142,7 +141,9 @@ class Negentropy {
         shouldSkip = true;
       } else if (mode == NegentropyMode.fingerprint.value) {
         // Decode their fingerprint
-        final theirFingerprint = Uint8List.fromList(query.sublist(offset, offset + 16));
+        final theirFingerprint = Uint8List.fromList(
+          query.sublist(offset, offset + 16),
+        );
         offset += 16;
 
         // Calculate our fingerprint for this range
@@ -152,7 +153,9 @@ class Negentropy {
         if (!_fingerprintsMatch(theirFingerprint, ourFingerprint)) {
           // Fingerprints don't match - split our range
           doSkip();
-          final actualIdPrefix = currBoundIdLen > 0 ? currBoundId.sublist(0, currBoundIdLen) : Uint8List(0);
+          final actualIdPrefix = currBoundIdLen > 0
+              ? currBoundId.sublist(0, currBoundIdLen)
+              : Uint8List(0);
           _splitRange(lower, upper, currBoundTimestamp, actualIdPrefix, o);
           shouldSkip = false;
         } else {
@@ -201,7 +204,9 @@ class Negentropy {
 
       prevIndex = upper;
       prevBoundTimestamp = currBoundTimestamp;
-      prevBoundId = currBoundIdLen > 0 ? currBoundId.sublist(0, currBoundIdLen) : Uint8List(0);
+      prevBoundId = currBoundIdLen > 0
+          ? currBoundId.sublist(0, currBoundIdLen)
+          : Uint8List(0);
     }
 
     // If output only has version byte (1 byte), we're done
@@ -219,7 +224,13 @@ class Negentropy {
 
   /// Split a range into buckets or send as ID list
   /// upperBoundTimestamp and upperBoundId define the upper bound of this range
-  void _splitRange(int lower, int upper, int upperBoundTimestamp, Uint8List upperBoundId, BytesBuilder output) {
+  void _splitRange(
+    int lower,
+    int upper,
+    int upperBoundTimestamp,
+    Uint8List upperBoundId,
+    BytesBuilder output,
+  ) {
     final numElems = upper - lower;
 
     if (numElems < 32) {
@@ -316,7 +327,10 @@ class Negentropy {
   }
 
   /// Decode bound from message
-  ({int timestamp, Uint8List id, int idLen, int offset}) _decodeBound(Uint8List data, int offset) {
+  ({int timestamp, Uint8List id, int idLen, int offset}) _decodeBound(
+    Uint8List data,
+    int offset,
+  ) {
     // Decode timestamp
     final tsResult = Varint.decode(data, offset);
     offset += tsResult.bytesRead;
