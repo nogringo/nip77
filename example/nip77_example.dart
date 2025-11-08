@@ -1,7 +1,7 @@
 import 'package:nip77/nip77.dart';
 
 void main() async {
-  final client = Nip77Client(relayUrl: "wss://relay.example.com");
+  final client = Nip77Client(relayUrl: "wss://nostr-01.uid.ovh");
 
   await client.connect();
 
