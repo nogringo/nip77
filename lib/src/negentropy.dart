@@ -7,6 +7,10 @@ import 'varint.dart';
 /// Negentropy protocol version
 const int protocolVersion = 0x61; // v1
 
+/// Maximum timestamp value that works in both native Dart and JavaScript
+/// Using 2^53-1 (Number.MAX_SAFE_INTEGER) to ensure JavaScript compatibility
+const int maxTimestamp = 9007199254740991; // 0x1FFFFFFFFFFFFF
+
 /// Protocol modes
 enum NegentropyMode {
   skip(0),
@@ -65,7 +69,7 @@ class Negentropy {
     output.addByte(protocolVersion);
 
     // Split range and add to output (use max bound for full range)
-    _splitRange(0, _records.length, 0x7FFFFFFFFFFFFFFF, Uint8List(0), output);
+    _splitRange(0, _records.length, maxTimestamp, Uint8List(0), output);
 
     return output.toBytes();
   }
@@ -316,9 +320,9 @@ class Negentropy {
 
   /// Encode timestamp with delta encoding
   void _encodeTimestamp(int timestamp, BytesBuilder output) {
-    if (timestamp == 0x7FFFFFFFFFFFFFFF) {
+    if (timestamp == maxTimestamp) {
       output.add(Varint.encode(0));
-      _lastTimestampOut = 0x7FFFFFFFFFFFFFFF;
+      _lastTimestampOut = maxTimestamp;
     } else {
       final delta = timestamp - _lastTimestampOut;
       output.add(Varint.encode(delta + 1));
@@ -337,8 +341,8 @@ class Negentropy {
 
     int timestamp;
     if (tsResult.value == 0) {
-      timestamp = 0x7FFFFFFFFFFFFFFF;
-      _lastTimestampIn = 0x7FFFFFFFFFFFFFFF;
+      timestamp = maxTimestamp;
+      _lastTimestampIn = maxTimestamp;
     } else {
       timestamp = tsResult.value - 1 + _lastTimestampIn;
       _lastTimestampIn = timestamp;
@@ -361,7 +365,7 @@ class Negentropy {
 
   /// Find upper bound in records for given timestamp and ID prefix
   int _findUpperBound(int start, int timestamp, Uint8List idPrefix) {
-    if (timestamp == 0x7FFFFFFFFFFFFFFF) {
+    if (timestamp == maxTimestamp) {
       return _records.length;
     }
 
